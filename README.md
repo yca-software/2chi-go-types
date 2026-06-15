@@ -29,3 +29,26 @@ val, err := p.Value() // "SRID=4326;POINT(2.3522 48.8566)"
 var scanned chi_types.Point
 err = scanned.Scan(hexEWKBFromDB)
 ```
+
+## Pagination
+
+Generic JSON shape for paginated list API responses.
+
+| Field | Description |
+| --- | --- |
+| `Items` | Page of results |
+| `HasNext` | Whether another page exists |
+
+### Example
+
+```go
+type User struct {
+    ID   string `json:"id"`
+    Name string `json:"name"`
+}
+
+resp := chi_types.PaginatedListResponse[User]{
+    Items:   users,
+    HasNext: len(users) == pageSize,
+}
+```
