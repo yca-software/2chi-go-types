@@ -6,6 +6,24 @@ Shared Go types for 2Chi projects.
 import chi_types "github.com/yca-software/2chi-go-types"
 ```
 
+## Models
+
+Embedded base structs for domain models and database rows. Use them to keep `id`, timestamps, and soft-delete fields consistent across modules.
+
+| Type | Description |
+| --- | --- |
+| `ModelBase` | `ID`, `CreatedAt`, `UpdatedAt` with `json` and `db` tags |
+| `ModelBaseWithArchive` | `ModelBase` plus optional `DeletedAt` for soft deletes |
+
+### Example
+
+```go
+type User struct {
+    chi_types.ModelBaseWithArchive
+    Email string `json:"email" db:"email"`
+}
+```
+
 ## Access
 
 Caller identity DTOs for JWT-authenticated requests. AuthZ logic stays in the app; these types describe who is calling.
