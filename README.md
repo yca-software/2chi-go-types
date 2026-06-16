@@ -6,6 +6,45 @@ Shared Go types for 2Chi projects.
 import chi_types "github.com/yca-software/2chi-go-types"
 ```
 
+## Access
+
+Caller identity DTOs for JWT-authenticated requests. AuthZ logic stays in the app; these types describe who is calling.
+
+| Type | Description |
+| --- | --- |
+| `AccessType` | `user` or `api_key` |
+| `AccessInfo` | Request context plus authenticated subject |
+| `JWTAccessTokenPermissionData` | Organization-scoped permissions from the JWT |
+
+`AccessInfo` fields:
+
+| Field | Description |
+| --- | --- |
+| `RequestID`, `IPAddress`, `UserAgent` | Request metadata |
+| `Type`, `SubjectID` | Caller type and user or API key ID |
+| `Email` | User email; empty for API keys |
+| `Roles` | Organization permissions (users and API keys) |
+| `IsAdmin` | Admin flag; always `false` for API keys |
+| `ImpersonatedBy`, `ImpersonatedByEmail` | Impersonation context (users only) |
+
+Use `organizationId` in JWT payloads — never `workspaceId`.
+
+### Example
+
+```go
+info := chi_types.AccessInfo{
+    Type:      chi_types.AccessTypeUser,
+    SubjectID: userID,
+    Email:     "ada@example.com",
+    Roles: []chi_types.JWTAccessTokenPermissionData{
+        {
+            OrganizationID: orgID,
+            Permissions:    []string{"members:read", "org:write"},
+        },
+    },
+}
+```
+
 ## Geo
 
 WGS84 (SRID 4326) types for PostGIS `geography` / `geometry` columns. Both implement `sql.Scanner` and `driver.Valuer`.
